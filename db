@@ -1,0 +1,95 @@
+#!/bin/bash
+#
+# This script provides commands to start, stop and check the status of the Cassandra database
+usage="$(basename "$0") [-h] {up|down|is_up} -- program to manage the Cassandra database
+
+  ARGUMENTS:
+    up         start the Cassandra docker container
+    down       stop the Cassandra docker container
+    is_up   return the starting status of Cassandra : (true|false)
+
+  OPTIONS:
+    -h      print the usage"
+
+readonly BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+readonly CONTAINER_NAME=cassandra-1
+readonly CASSANDRA_CONTAINER_NAME="cassandra-1"
+readonly CASSANDRA_USER="cassandra"
+readonly CASSANDRA_PASSWORD="cassandra"
+export PATH=/usr/local/bin:$PATH
+
+main() {
+  case "$1" in
+  up)
+    docker-compose -f "${BASEDIR}/docker-compose.yml" up -d
+    echo -n 'Wait for C* '
+    until docker exec "${CONTAINER_NAME}" cqlsh 2>/dev/null; do
+      sleep 0.5
+      echo -n '#'
+    done
+
+    echo -n -e "\nCreate AccountManagement Keyspace & Tables"
+    SCHEMA_FILES="${BASEDIR}/tools/schema/*.json"
+    
+    create_table() {
+      java -jar "$BASEDIR"/tools/scalardb-schema-loader-3.3.0.jar --config "$BASEDIR"/api/src/main/resources/database.properties --coordinator -f $1
+    }
+    
+    if command -v jq &> /dev/null
+    then
+      create_table <(jq -s add $SCHEMA_FILES)
+    else
+      for f in $SCHEMA_FILES; do
+        FILE_NAME=`basename $f`
+        echo -n -e "\n・${FILE_NAME}\n"
+        create_table "$f"
+      done
+    fi
+
+    echo -n -e "\nDatabase setup is all complete"
+    ;;
+
+  down)
+    echo -n -e "\nDelete AccountManagement Keyspace & Tables"
+    SCHEMA_FILES="${BASEDIR}/tools/schema/*.json"
+
+    delete_table() {
+      java -jar "$BASEDIR"/tools/scalardb-schema-loader-3.3.0.jar --config "$BASEDIR"/api/src/main/resources/database.properties -f $1 -D
+    }
+
+    if command -v jq &> /dev/null
+    then
+      delete_table <(jq -s add $SCHEMA_FILES)
+    else
+      for f in $SCHEMA_FILES; do
+        FILE_NAME=`basename $f`
+        echo -n -e "\n・${FILE_NAME}\n"
+        delete_table "$f"
+      done
+    fi
+
+    docker-compose -f "${BASEDIR}/docker-compose.yml" down -v
+
+    echo -n -e "\nDatabase down is all complete"
+    ;;
+
+  is_up)
+    RUNNING_STATUS=$(docker ps -f status=running -f "name=${CONTAINER_NAME}" --format '{{.Status}}')
+    if [[ -n "$RUNNING_STATUS" ]]; then
+      echo 'true'
+    else
+      echo 'false'
+    fi
+    ;;
+  '' | -h)
+    echo "${usage}"
+    ;;
+  *)
+    echo "Unexpected goal ${1}"
+    printf '\n'
+    echo "${usage}"
+    ;;
+  esac
+}
+
+main "$*"

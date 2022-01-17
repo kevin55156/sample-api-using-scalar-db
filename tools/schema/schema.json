@@ -1,0 +1,36 @@
+{
+  "demo.groups": {
+    "transaction": true,
+    "partition-key": [
+      "group_id"
+    ],
+    "clustering-key": [],
+    "columns": {
+      "group_id": "TEXT",
+      "group_name": "TEXT",
+      "group_users": "TEXT",
+      "common_key": "TEXT"
+    },
+    "secondary-index": [
+      "common_key"]
+  },
+  "demo.users": {
+    "transaction": true,
+    "partition-key": [
+      "user_id"
+    ],
+    "clustering-key": [],
+    "columns": {
+      "user_id": "TEXT",
+      "email": "TEXT",
+      "family_name": "TEXT",
+      "given_name": "TEXT",
+      "user_detail": "TEXT",
+      "user_groups": "TEXT",
+      "common_key": "TEXT"
+    },
+    "secondary-index": [
+      "common_key"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '8'
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+dependencies {
+	implementation 'com.scalar-labs:scalardb:3.3.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+	implementation group: 'com.google.inject', name: 'guice', version: '5.0.1'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation group: 'junit', name: 'junit', version: '4.12'
+	testImplementation 'org.springframework.security:spring-security-test:5.6.0'
+	testImplementation  group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1'
+	testImplementation 'io.cucumber:cucumber-java:6.10.4'
+	testImplementation 'io.cucumber:cucumber-spring:6.10.4'
+	testImplementation 'io.cucumber:cucumber-junit:6.10.4'
+}
+
+task cucumber() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty', '--plugin', 'html:target/cucumber.html', '--glue', 'com.example.api.cucumber', 'src/test/resources']
+        }
+    }
+}
+
+test {
+		exclude '**/cucumber/**'
+    useJUnitPlatform()
+}
