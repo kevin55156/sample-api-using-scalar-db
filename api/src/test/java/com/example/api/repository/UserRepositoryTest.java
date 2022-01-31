@@ -13,7 +13,7 @@ import com.example.api.dto.GetGroupDto;
 import com.example.api.dto.UpdateUserDto;
 import com.example.api.exception.ObjectAlreadyExistingException;
 import com.example.api.exception.ObjectNotFoundException;
-import com.example.api.exception.RepositoryException;
+import com.example.api.exception.RepositoryCrudException;
 import com.example.api.model.User;
 import com.example.api.util.UserStub;
 import com.scalar.db.api.Delete;
@@ -86,7 +86,8 @@ public class UserRepositoryTest {
     doThrow(CrudException.class).when(tx).put(any(Put.class));
 
     Assertions.assertThrows(
-        RepositoryException.class, () -> repository.createUser(tx, createUserDto, MOCKED_USER_ID));
+        RepositoryCrudException.class,
+        () -> repository.createUser(tx, createUserDto, MOCKED_USER_ID));
   }
 
   @Test
@@ -128,7 +129,7 @@ public class UserRepositoryTest {
     doThrow(CrudException.class).when(tx).put(any(Put.class));
 
     Assertions.assertThrows(
-        RepositoryException.class,
+        RepositoryCrudException.class,
         () -> repository.updateUser(tx, updateUserDto, groups, MOCKED_USER_ID));
   }
 
@@ -156,7 +157,7 @@ public class UserRepositoryTest {
     doThrow(CrudException.class).when(tx).delete(any(Delete.class));
 
     Assertions.assertThrows(
-        RepositoryException.class, () -> repository.deleteUser(tx, MOCKED_USER_ID));
+        RepositoryCrudException.class, () -> repository.deleteUser(tx, MOCKED_USER_ID));
   }
 
   @Test
@@ -188,7 +189,7 @@ public class UserRepositoryTest {
     doThrow(CrudException.class).when(tx).get(any());
 
     Assertions.assertThrows(
-        RepositoryException.class, () -> repository.getUser(tx, MOCKED_USER_ID));
+        RepositoryCrudException.class, () -> repository.getUser(tx, MOCKED_USER_ID));
   }
 
   @Test
@@ -207,7 +208,7 @@ public class UserRepositoryTest {
   public void listUsers_dbSomeProblems_CrudExceptionThrown() throws TransactionException {
     doThrow(CrudException.class).when(tx).scan(any());
 
-    Assertions.assertThrows(RepositoryException.class, () -> repository.listUsers(tx));
+    Assertions.assertThrows(RepositoryCrudException.class, () -> repository.listUsers(tx));
   }
 
   private void arrangeResult(Result result, final String userId) {

@@ -5,7 +5,6 @@ import com.example.api.dto.GetGroupDto;
 import com.example.api.dto.GroupUserDto;
 import com.example.api.service.AuthenticationService.AccountUser;
 import com.example.api.service.GroupService;
-import com.scalar.db.exception.transaction.TransactionException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.CREATED)
   public String createGroup(
       @RequestBody CreateGroupDto createGroupDto, @AuthenticationPrincipal AccountUser user)
-      throws TransactionException {
+      throws Exception {
     return groupService.createGroup(createGroupDto, user.getUserId());
   }
 
@@ -44,7 +43,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public void addGroupUsers(
       @PathVariable(PATH_GROUP_ID) String groupId, @RequestBody GroupUserDto groupUser)
-      throws TransactionException {
+      throws Exception {
     groupService.addGroupUser(groupId, groupUser);
   }
 
@@ -54,7 +53,7 @@ public class GroupController {
   @ResponseStatus(HttpStatus.OK)
   public void deleteGroupUser(
       @PathVariable(PATH_GROUP_ID) String groupId, @PathVariable(PATH_USER_ID) String userId)
-      throws TransactionException {
+      throws Exception {
     groupService.deleteGroupUser(groupId, userId);
   }
 
@@ -62,7 +61,7 @@ public class GroupController {
   @PreAuthorize(
       "hasRole('ROLE_ADMIN') or @webSecurityConfig.isGroupUser(principal.groupIdList, #groupId)")
   @ResponseStatus(HttpStatus.OK)
-  public void deleteGroup(@PathVariable(PATH_GROUP_ID) String groupId) throws TransactionException {
+  public void deleteGroup(@PathVariable(PATH_GROUP_ID) String groupId) throws Exception {
     groupService.deleteGroup(groupId);
   }
 
@@ -71,14 +70,14 @@ public class GroupController {
       "hasRole('ROLE_ADMIN') or @webSecurityConfig.isGroupUser(principal.groupIdList, #groupId)")
   @ResponseStatus(HttpStatus.OK)
   public List<GroupUserDto> listGroupUsers(@PathVariable(PATH_GROUP_ID) String groupId)
-      throws TransactionException {
+      throws Exception {
     return groupService.listGroupUsers(groupId);
   }
 
   @GetMapping()
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   @ResponseStatus(HttpStatus.OK)
-  public List<GetGroupDto> listGroups() throws TransactionException {
+  public List<GetGroupDto> listGroups() throws Exception {
     return groupService.listGroups();
   }
 }

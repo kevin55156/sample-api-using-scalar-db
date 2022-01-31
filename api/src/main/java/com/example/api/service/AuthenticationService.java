@@ -24,8 +24,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService
     implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
-  @Autowired UserRepository userRepository;
-  @Autowired DistributedTransactionManager db;
+  private final UserRepository userRepository;
+  private final DistributedTransactionManager manager;
+
+  @Autowired
+  public AuthenticationService(
+      UserRepository userRepository, DistributedTransactionManager manager) {
+    this.userRepository = userRepository;
+    this.manager = manager;
+  }
 
   @Override
   public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token)
@@ -39,7 +46,7 @@ public class AuthenticationService
         return new AccountUser("user", "password", authorities, null, null);
       }
 
-      DistributedTransaction tx = db.start();
+      DistributedTransaction tx = manager.start();
       User user = userRepository.getUser(tx, userId);
       authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 

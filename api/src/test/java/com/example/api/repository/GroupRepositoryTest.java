@@ -12,7 +12,7 @@ import com.example.api.dto.CreateGroupDto;
 import com.example.api.dto.GroupUserDto;
 import com.example.api.exception.ObjectAlreadyExistingException;
 import com.example.api.exception.ObjectNotFoundException;
-import com.example.api.exception.RepositoryException;
+import com.example.api.exception.RepositoryCrudException;
 import com.example.api.model.Group;
 import com.example.api.model.GroupUser;
 import com.example.api.util.GroupStub;
@@ -87,7 +87,7 @@ public class GroupRepositoryTest {
     doThrow(CrudException.class).when(tx).put(any(Put.class));
 
     Assertions.assertThrows(
-        RepositoryException.class,
+        RepositoryCrudException.class,
         () ->
             repository.createGroup(tx, createGroupDto, MOCKED_GROUP_ID, GroupStub.getGroupUsers()));
   }
@@ -107,7 +107,7 @@ public class GroupRepositoryTest {
   @Test
   public void listGroups_doSomeProblem_CrudException() throws TransactionException {
     doThrow(CrudException.class).when(tx).scan(any());
-    Assertions.assertThrows(RepositoryException.class, () -> repository.listGroups(tx));
+    Assertions.assertThrows(RepositoryCrudException.class, () -> repository.listGroups(tx));
   }
 
   @Test
@@ -138,7 +138,7 @@ public class GroupRepositoryTest {
     doThrow(CrudException.class).when(tx).get(any());
 
     Assertions.assertThrows(
-        RepositoryException.class, () -> repository.getGroup(tx, MOCKED_GROUP_ID));
+        RepositoryCrudException.class, () -> repository.getGroup(tx, MOCKED_GROUP_ID));
   }
 
   @Test
@@ -176,7 +176,7 @@ public class GroupRepositoryTest {
     doThrow(CrudException.class).when(tx).put(any(Put.class));
 
     Assertions.assertThrows(
-        RepositoryException.class,
+        RepositoryCrudException.class,
         () -> repository.updateGroupUsers(tx, groupUsers, MOCKED_GROUP_ID));
   }
 
@@ -205,7 +205,7 @@ public class GroupRepositoryTest {
     doThrow(CrudException.class).when(tx).delete(any(Delete.class));
 
     Assertions.assertThrows(
-        RepositoryException.class, () -> repository.deleteGroup(tx, MOCKED_GROUP_ID));
+        RepositoryCrudException.class, () -> repository.deleteGroup(tx, MOCKED_GROUP_ID));
   }
 
   private void arrangeResult(Result result, final String groupId) {

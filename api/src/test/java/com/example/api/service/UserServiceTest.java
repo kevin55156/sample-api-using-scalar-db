@@ -19,6 +19,7 @@ import com.example.api.util.GroupStub;
 import com.example.api.util.UserStub;
 import com.scalar.db.api.DistributedTransaction;
 import com.scalar.db.api.DistributedTransactionManager;
+import com.scalar.db.exception.transaction.CommitConflictException;
 import com.scalar.db.exception.transaction.CommitException;
 import com.scalar.db.exception.transaction.TransactionException;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void createUser_shouldSuccess() throws TransactionException {
+  public void createUser_shouldSuccess() throws TransactionException, InterruptedException {
     CreateUserDto createUserDto = UserStub.getCreateUserDto();
     userService.createUser(createUserDto);
 
@@ -59,16 +60,28 @@ public class UserServiceTest {
 
   @Test
   public void createUser_whenCommitFailed_shouldThrowServiceException()
-      throws TransactionException {
+      throws TransactionException, InterruptedException {
     CreateUserDto createUserDto = UserStub.getCreateUserDto();
     doThrow(CommitException.class).when(tx).commit();
 
     assertThrows(ServiceException.class, () -> userService.createUser(createUserDto));
-    verify(tx).abort();
+    verify(tx, times(1)).abort();
   }
 
   @Test
-  public void updateUser_shouldSuccess() throws TransactionException {
+  public void
+      createUser_whenCommitConflictExceptionIsThrown_shouldThrowServiceExceptionAndAbordTransaction3Times()
+          throws TransactionException, InterruptedException {
+    CreateUserDto createUserDto = UserStub.getCreateUserDto();
+
+    doThrow(CommitConflictException.class).when(tx).commit();
+
+    assertThrows(ServiceException.class, () -> userService.createUser(createUserDto));
+    verify(tx, times(3)).abort();
+  }
+
+  @Test
+  public void updateUser_shouldSuccess() throws TransactionException, InterruptedException {
     User user = UserStub.getUser(MOCKED_USER_ID);
     when(userRepository.getUser(tx, MOCKED_USER_ID)).thenReturn(user);
     UpdateUserDto updateUserDto = UserStub.getUpdateUserDto();
@@ -87,11 +100,26 @@ public class UserServiceTest {
 
     assertThrows(
         ServiceException.class, () -> userService.updateUser(MOCKED_USER_ID, updateUserDto));
-    verify(tx).abort();
+    verify(tx, times(1)).abort();
   }
 
   @Test
-  public void deleteUser_shouldSuccess() throws TransactionException {
+  public void
+      updateUser_whenCommitConflictException_shouldThrowServiceExceptionAndAbortTransaction3Times()
+          throws Exception {
+    User user = UserStub.getUser(MOCKED_USER_ID);
+    UpdateUserDto updateUserDto = UserStub.getUpdateUserDto();
+    when(userRepository.getUser(tx, MOCKED_USER_ID)).thenReturn(user);
+
+    doThrow(CommitConflictException.class).when(tx).commit();
+
+    assertThrows(
+        ServiceException.class, () -> userService.updateUser(MOCKED_USER_ID, updateUserDto));
+    verify(tx, times(3)).abort();
+  }
+
+  @Test
+  public void deleteUser_shouldSuccess() throws TransactionException, InterruptedException {
     User user = UserStub.getUser(MOCKED_USER_ID);
     Group group = GroupStub.getGroup(MOCKED_GROUP_ID);
 
@@ -119,7 +147,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getUser_shouldSuccess() throws TransactionException {
+  public void getUser_shouldSuccess() throws TransactionException, InterruptedException {
     User user = UserStub.getUser(MOCKED_USER_ID);
     when(userRepository.getUser(tx, MOCKED_USER_ID)).thenReturn(user);
 
@@ -130,7 +158,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void listUsers_shouldSuccess() throws TransactionException {
+  public void listUsers_shouldSuccess() throws TransactionException, InterruptedException {
     List<User> users = new ArrayList<User>(Arrays.asList(UserStub.getUser(MOCKED_USER_ID)));
 
     when(userRepository.listUsers(tx)).thenReturn(users);

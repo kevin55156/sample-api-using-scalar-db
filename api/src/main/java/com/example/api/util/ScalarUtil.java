@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.AbstractConverter;
+import org.modelmapper.Converter;
 
 @Slf4j
 public class ScalarUtil {
@@ -128,5 +130,44 @@ public class ScalarUtil {
       log.error(e.getMessage(), e);
     }
     return null;
+  }
+
+  public static <D, S> Converter<S, D> convertDataObjectToDto(S source, Class<D> valueType) {
+    if (source == null) {
+      return null;
+    }
+    return new AbstractConverter<S, D>() {
+      @Override
+      protected D convert(S source) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+          String items = mapper.writeValueAsString(source);
+          return mapper.readValue(items, valueType);
+        } catch (JsonProcessingException e) {
+          log.error(e.getMessage(), e);
+        }
+        return null;
+      }
+    };
+  }
+
+  public static <D, S> Converter<List<S>, List<D>> converterDataObjectListToDtoList(
+      List<S> sourceList, Class<D[]> valueType) {
+    if (sourceList == null) {
+      return null;
+    }
+    return new AbstractConverter<List<S>, List<D>>() {
+      @Override
+      protected List<D> convert(List<S> sourceList) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+          String items = mapper.writeValueAsString(sourceList);
+          return new ArrayList<D>(Arrays.asList(mapper.readValue(items, valueType)));
+        } catch (JsonProcessingException e) {
+          log.error(e.getMessage(), e);
+        }
+        return null;
+      }
+    };
   }
 }

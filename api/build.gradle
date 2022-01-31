@@ -22,7 +22,6 @@ dependencies {
 	implementation 'com.scalar-labs:scalardb:3.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
-	implementation group: 'com.google.inject', name: 'guice', version: '5.0.1'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0'
 	compileOnly 'org.projectlombok:lombok'
@@ -49,6 +48,5 @@ task cucumber() {
 }
 
 test {
-		exclude '**/cucumber/**'
     useJUnitPlatform()
 }

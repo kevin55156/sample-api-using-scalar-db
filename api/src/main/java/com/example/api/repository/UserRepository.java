@@ -3,7 +3,8 @@ package com.example.api.repository;
 import com.example.api.dto.CreateUserDto;
 import com.example.api.dto.GetGroupDto;
 import com.example.api.dto.UpdateUserDto;
-import com.example.api.exception.RepositoryException;
+import com.example.api.exception.RepositoryConflictException;
+import com.example.api.exception.RepositoryCrudException;
 import com.example.api.model.User;
 import com.example.api.model.User.UserBuilder;
 import com.example.api.model.UserDetail;
@@ -15,6 +16,7 @@ import com.scalar.db.api.Get;
 import com.scalar.db.api.Put;
 import com.scalar.db.api.Result;
 import com.scalar.db.api.Scan;
+import com.scalar.db.exception.transaction.CrudConflictException;
 import com.scalar.db.exception.transaction.CrudException;
 import com.scalar.db.io.Key;
 import com.scalar.db.io.TextValue;
@@ -40,8 +42,10 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
               .withValue(User.COMMON_KEY, COMMON_KEY);
       tx.put(put);
       return userId;
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Creating a User failed", e);
+      throw new RepositoryCrudException("Adding User failed", e);
     }
   }
 
@@ -49,7 +53,8 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
       DistributedTransaction tx,
       UpdateUserDto updateUserDto,
       List<GetGroupDto> userGroups,
-      String userId) {
+      String userId)
+      throws CrudException {
     try {
       Key pk = createPk(userId);
       getAndThrowsIfNotFound(tx, createGet(pk));
@@ -66,8 +71,10 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
               .withValue(User.USER_GROUPS, ScalarUtil.convertDataObjectToJsonStr(userGroups))
               .withValue(User.COMMON_KEY, COMMON_KEY);
       tx.put(put);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Updating a User failed", e);
+      throw new RepositoryCrudException("Updating User failed", e);
     }
   }
 
@@ -88,8 +95,10 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
               .withValue(User.USER_GROUPS, ScalarUtil.convertDataObjectToJsonStr(userGroups))
               .withValue(User.COMMON_KEY, COMMON_KEY);
       tx.put(put);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Updating UserGroups failed", e);
+      throw new RepositoryCrudException("Updating UserGroups failed", e);
     }
   }
 
@@ -99,8 +108,10 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
       getAndThrowsIfNotFound(tx, createGet(pk));
       Delete delete = new Delete(pk).forNamespace(NAMESPACE).forTable(TABLE_NAME);
       tx.delete(delete);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Deleting a User failed", e);
+      throw new RepositoryCrudException("Deleting User failed", e);
     }
   }
 
@@ -108,8 +119,10 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
     try {
       Scan scan = createScanWithCommonKey();
       return scan(tx, scan);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Reading Users failed", e);
+      throw new RepositoryCrudException("Listing Users failed", e);
     }
   }
 
@@ -117,8 +130,10 @@ public class UserRepository extends ScalarDbReadOnlyRepository<User> {
     try {
       Key pk = createPk(userId);
       return getAndThrowsIfNotFound(tx, createGet(pk));
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Reading a User failed", e);
+      throw new RepositoryCrudException("Reading User failed", e);
     }
   }
 

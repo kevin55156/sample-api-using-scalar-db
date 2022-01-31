@@ -4,7 +4,6 @@ import com.example.api.dto.CreateUserDto;
 import com.example.api.dto.GetUserDto;
 import com.example.api.dto.UpdateUserDto;
 import com.example.api.service.UserService;
-import com.scalar.db.exception.transaction.TransactionException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +27,7 @@ public class UserController {
 
   @PostMapping()
   @ResponseStatus(HttpStatus.CREATED)
-  public String createUser(@RequestBody CreateUserDto createUserDto) throws TransactionException {
+  public String createUser(@RequestBody CreateUserDto createUserDto) throws Exception {
     return userService.createUser(createUserDto);
   }
 
@@ -37,28 +36,28 @@ public class UserController {
   @ResponseStatus(HttpStatus.OK)
   public void updateUser(
       @PathVariable(PATH_USER_ID) String userId, @RequestBody UpdateUserDto updateUserDto)
-      throws TransactionException {
+      throws Exception {
     userService.updateUser(userId, updateUserDto);
   }
 
   @DeleteMapping("/{user_id}")
   @PreAuthorize("hasRole('ROLE_ADMIN') or principal.userId == #userId")
   @ResponseStatus(HttpStatus.OK)
-  public void deleteUser(@PathVariable(PATH_USER_ID) String userId) throws TransactionException {
+  public void deleteUser(@PathVariable(PATH_USER_ID) String userId) throws Exception {
     userService.deleteUser(userId);
   }
 
   @GetMapping("/{user_id}")
   @PreAuthorize("hasRole('ROLE_ADMIN') or principal.userId == #userId")
   @ResponseStatus(HttpStatus.OK)
-  public GetUserDto getUser(@PathVariable(PATH_USER_ID) String userId) throws TransactionException {
+  public GetUserDto getUser(@PathVariable(PATH_USER_ID) String userId) throws Exception {
     return userService.getUser(userId);
   }
 
   @GetMapping()
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public List<GetUserDto> listUsers() throws TransactionException {
+  public List<GetUserDto> listUsers() throws Exception {
     return userService.listUsers();
   }
 }

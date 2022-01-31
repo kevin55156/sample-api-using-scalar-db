@@ -1,7 +1,8 @@
 package com.example.api.repository;
 
 import com.example.api.dto.CreateGroupDto;
-import com.example.api.exception.RepositoryException;
+import com.example.api.exception.RepositoryConflictException;
+import com.example.api.exception.RepositoryCrudException;
 import com.example.api.model.Group;
 import com.example.api.model.Group.GroupBuilder;
 import com.example.api.model.GroupUser;
@@ -12,6 +13,7 @@ import com.scalar.db.api.Get;
 import com.scalar.db.api.Put;
 import com.scalar.db.api.Result;
 import com.scalar.db.api.Scan;
+import com.scalar.db.exception.transaction.CrudConflictException;
 import com.scalar.db.exception.transaction.CrudException;
 import com.scalar.db.io.Key;
 import com.scalar.db.io.TextValue;
@@ -38,8 +40,10 @@ public class GroupRepository extends ScalarDbReadOnlyRepository<Group> {
               .withValue(Group.GROUP_USERS, ScalarUtil.convertDataObjectToJsonStr(groupUsers))
               .withValue(Group.COMMON_KEY, COMMON_KEY);
       tx.put(put);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Creating a Group failed", e);
+      throw new RepositoryCrudException("Adding Group failed", e);
     }
   }
 
@@ -56,8 +60,10 @@ public class GroupRepository extends ScalarDbReadOnlyRepository<Group> {
               .withValue(Group.GROUP_USERS, ScalarUtil.convertDataObjectToJsonStr(groupUsers))
               .withValue(Group.COMMON_KEY, COMMON_KEY);
       tx.put(put);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Updating GroupUsers failed", e);
+      throw new RepositoryCrudException("Updating GroupUsers failed", e);
     }
   }
 
@@ -67,8 +73,10 @@ public class GroupRepository extends ScalarDbReadOnlyRepository<Group> {
       getAndThrowsIfNotFound(tx, createGet(pk));
       Delete delete = new Delete(pk).forNamespace(NAMESPACE).forTable(TABLE_NAME);
       tx.delete(delete);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Deleting Group failed", e);
+      throw new RepositoryCrudException("Deleting Group failed", e);
     }
   }
 
@@ -76,8 +84,10 @@ public class GroupRepository extends ScalarDbReadOnlyRepository<Group> {
     try {
       Scan scan = createScanWithCommonKey();
       return scan(tx, scan);
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Reading Groups failed", e);
+      throw new RepositoryCrudException("Reading Groups failed", e);
     }
   }
 
@@ -85,8 +95,10 @@ public class GroupRepository extends ScalarDbReadOnlyRepository<Group> {
     try {
       Key pk = createPk(groupId);
       return getAndThrowsIfNotFound(tx, createGet(pk));
+    } catch (CrudConflictException e) {
+      throw new RepositoryConflictException(e.getMessage(), e);
     } catch (CrudException e) {
-      throw new RepositoryException("Reading a Group failed", e);
+      throw new RepositoryCrudException("Reading a Group failed", e);
     }
   }
 
