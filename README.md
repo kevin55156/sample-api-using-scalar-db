@@ -7,7 +7,7 @@ Scalar DBとSpring Bootを使ったサンプルAPIです。
 | --- | ---------- | ------------ |
 | /users | POST | ユーザーを登録する |
 | /users | GET | ユーザーを一覧取得する |
-| /users| GET | ユーザー情報を取得する |
+| /users/{user_id} | GET | ユーザー情報を取得する |
 | /users/{user_id} | PUT | ユーザー情報を更新する |
 | /users/{user_id} | DELETE | ユーザーを削除する |
 | /movies/{user_id} | POST | グループを登録する |
