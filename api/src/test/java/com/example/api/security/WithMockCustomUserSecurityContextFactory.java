@@ -20,10 +20,10 @@ public class WithMockCustomUserSecurityContextFactory
   public SecurityContext createSecurityContext(WithCustomMockUser user) {
     List<GrantedAuthority> authorities =
         new ArrayList<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(user.role())));
-    List<String> groupIdList = new ArrayList<String>(Arrays.asList(user.groupId()));
+    List<String> movieIdList = new ArrayList<String>(Arrays.asList(user.movieId()));
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     AccountUser principal =
-        new AccountUser(user.username(), user.password(), authorities, user.userId(), groupIdList);
+        new AccountUser(user.username(), user.password(), authorities, user.userId(), movieIdList);
     Authentication authentication =
         new UsernamePasswordAuthenticationToken(
             principal, principal.getPassword(), principal.getAuthorities());

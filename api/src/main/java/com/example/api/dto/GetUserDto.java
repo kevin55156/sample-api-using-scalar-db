@@ -22,8 +22,8 @@ public class GetUserDto {
   @JsonProperty("given_name")
   String givenName;
 
-  @JsonProperty("user_groups")
-  List<GetGroupDto> userGroups;
+  @JsonProperty("user_movies")
+  List<GetMovieDto> userMovies;
 
   @JsonProperty("user_detail")
   UserDetailDto userDetail;

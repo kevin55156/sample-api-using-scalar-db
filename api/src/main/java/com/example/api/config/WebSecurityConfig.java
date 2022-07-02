@@ -24,13 +24,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().disable();
-    http.authorizeRequests()
-        .anyRequest()
-        .authenticated()
-        .and()
-        .addFilter(preAuthenticatedProcessingFilter())
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    // http.authorizeRequests()
+    //     .anyRequest()
+    //     .authenticated()
+    //     .and()
+    //     .addFilter(preAuthenticatedProcessingFilter())
+    //     .sessionManagement()
+    //     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
   }
 
   @Bean
@@ -64,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
   }
 
-  public boolean isGroupUser(List<String> groupIdList, String groupId) {
-    return groupIdList.contains(groupId);
+  public boolean isMovieUser(List<String> movieIdList, String movieId) {
+    return movieIdList.contains(movieId);
   }
 }

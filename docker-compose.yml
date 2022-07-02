@@ -1,9 +1,21 @@
-version: '3.8'
+version: "3.5"
 services:
+  mysql:
+    image: mysql:8.0.26
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+    container_name: "mysql-1"
+    ports:
+      - "3306:3306"
+    networks:
+      - sample-network
   cassandra:
-    image: arm64v8/cassandra:3.11
+    image: cassandra:3.11
     container_name: "cassandra-1"
-    volumes:
-      - ./docker/cassandra-data:/var/lib/cassandra
     ports:
       - "9042:9042"
+    networks:
+      - sample-network
+networks:
+  sample-network:
+    name: sample-network

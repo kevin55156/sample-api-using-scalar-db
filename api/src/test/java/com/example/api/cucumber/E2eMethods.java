@@ -53,7 +53,7 @@ public class E2eMethods {
     return response;
   }
 
-  public Response deleteGroupUser(String endPointURL, String userId) {
+  public Response deleteMovieUser(String endPointURL, String userId) {
     authorizationHeader = userId;
     RequestSpecification request = initializeRequest();
     response = request.put(endPointURL);

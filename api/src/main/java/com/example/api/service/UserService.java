@@ -1,7 +1,7 @@
 package com.example.api.service;
 
 import com.example.api.dto.CreateUserDto;
-import com.example.api.dto.GetGroupDto;
+import com.example.api.dto.GetMovieDto;
 import com.example.api.dto.GetUserDto;
 import com.example.api.dto.GetUserDto.GetUserDtoBuilder;
 import com.example.api.dto.UpdateUserDto;
@@ -10,10 +10,10 @@ import com.example.api.exception.ObjectNotFoundException;
 import com.example.api.exception.RepositoryConflictException;
 import com.example.api.exception.RepositoryCrudException;
 import com.example.api.exception.ServiceException;
-import com.example.api.model.GroupUser;
+import com.example.api.model.MovieUser;
 import com.example.api.model.User;
-import com.example.api.model.UserGroup;
-import com.example.api.repository.GroupRepository;
+import com.example.api.model.UserMovie;
+import com.example.api.repository.MovieRepository;
 import com.example.api.repository.UserRepository;
 import com.example.api.util.ScalarUtil;
 import com.scalar.db.api.DistributedTransaction;
@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserService {
   private final UserRepository userRepository;
-  private final GroupRepository groupRepository;
+  private final MovieRepository movieRepository;
   private final DistributedTransactionManager manager;
   private DistributedTransaction tx;
 
@@ -47,10 +47,10 @@ public class UserService {
   @Autowired
   public UserService(
       UserRepository userRepository,
-      GroupRepository groupRepository,
+      MovieRepository movieRepository,
       DistributedTransactionManager manager) {
     this.userRepository = userRepository;
-    this.groupRepository = groupRepository;
+    this.movieRepository = movieRepository;
     this.manager = manager;
   }
 
@@ -71,7 +71,7 @@ public class UserService {
         } catch (AbortException ex) {
           log.error(ex.getMessage(), ex);
         }
-        throw new ServiceException("An error occurred when adding a group", e);
+        throw new ServiceException("An error occurred when adding a movie", e);
       }
 
       try {
@@ -114,14 +114,14 @@ public class UserService {
         } catch (AbortException ex) {
           log.error(ex.getMessage(), ex);
         }
-        throw new ServiceException("An error occurred when adding a group", e);
+        throw new ServiceException("An error occurred when adding a movie", e);
       }
 
       try {
-        List<GetGroupDto> userGroups =
+        List<GetMovieDto> userMovies =
             ScalarUtil.convertDataObjectListToAnotherDataObjectList(
-                userRepository.getUser(tx, userId).getUserGroups(), GetGroupDto[].class);
-        userRepository.updateUser(tx, updateUserDto, userGroups, userId);
+                userRepository.getUser(tx, userId).getUserMovies(), GetMovieDto[].class);
+        userRepository.updateUser(tx, updateUserDto, userMovies, userId);
         tx.commit();
         break;
       } catch (CommitConflictException | CrudConflictException e) {
@@ -166,19 +166,19 @@ public class UserService {
         } catch (AbortException ex) {
           log.error(ex.getMessage(), ex);
         }
-        throw new ServiceException("An error occurred when adding a group", e);
+        throw new ServiceException("An error occurred when adding a movie", e);
       }
 
       try {
         User user = userRepository.getUser(tx, userId);
-        List<UserGroup> userGroups = user.getUserGroups();
-        if (Optional.ofNullable(userGroups).isPresent()) {
-          userGroups.forEach(
-              (userGroup -> {
-                List<GroupUser> groupUsers =
-                    groupRepository.getGroup(tx, userGroup.getGroupId()).getGroupUsers();
-                groupUsers.removeIf(groupUser -> groupUser.getUserId().equals(userId));
-                groupRepository.updateGroupUsers(tx, groupUsers, userGroup.getGroupId());
+        List<UserMovie> userMovies = user.getUserMovies();
+        if (Optional.ofNullable(userMovies).isPresent()) {
+          userMovies.forEach(
+              (userMovie -> {
+                List<MovieUser> movieUsers =
+                    movieRepository.getMovie(tx, userMovie.getMovieId()).getMovieUsers();
+                movieUsers.removeIf(movieUser -> movieUser.getUserId().equals(userId));
+                movieRepository.updateMovieUsers(tx, movieUsers, userMovie.getMovieId());
               }));
         }
 
@@ -222,7 +222,7 @@ public class UserService {
         } catch (AbortException ex) {
           log.error(ex.getMessage(), ex);
         }
-        throw new ServiceException("An error occurred when adding a group", e);
+        throw new ServiceException("An error occurred when adding a movie", e);
       }
 
       try {
@@ -266,7 +266,7 @@ public class UserService {
         } catch (AbortException ex) {
           log.error(ex.getMessage(), ex);
         }
-        throw new ServiceException("An error occurred when adding a group", e);
+        throw new ServiceException("An error occurred when adding a movie", e);
       }
 
       try {
@@ -310,9 +310,9 @@ public class UserService {
         .userDetail(
             ScalarUtil.convertDataObjectToAnotherDataObject(
                 user.getUserDetail(), UserDetailDto.class))
-        .userGroups(
+        .userMovies(
             ScalarUtil.convertDataObjectListToAnotherDataObjectList(
-                user.getUserGroups(), GetGroupDto[].class))
+                user.getUserMovies(), GetMovieDto[].class))
         .build();
   }
 }

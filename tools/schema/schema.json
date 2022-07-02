@@ -1,20 +1,20 @@
 {
-  "demo.groups": {
+  "movie.movies": {
     "transaction": true,
     "partition-key": [
-      "group_id"
+      "movie_id"
     ],
     "clustering-key": [],
     "columns": {
-      "group_id": "TEXT",
-      "group_name": "TEXT",
-      "group_users": "TEXT",
+      "movie_id": "TEXT",
+      "movie_name": "TEXT",
+      "movie_users": "TEXT",
       "common_key": "TEXT"
     },
     "secondary-index": [
       "common_key"]
   },
-  "demo.users": {
+  "user.users": {
     "transaction": true,
     "partition-key": [
       "user_id"
@@ -26,7 +26,7 @@
       "family_name": "TEXT",
       "given_name": "TEXT",
       "user_detail": "TEXT",
-      "user_groups": "TEXT",
+      "user_movies": "TEXT",
       "common_key": "TEXT"
     },
     "secondary-index": [

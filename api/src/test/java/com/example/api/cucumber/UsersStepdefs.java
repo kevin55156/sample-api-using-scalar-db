@@ -1,11 +1,11 @@
 package com.example.api.cucumber;
 
-import static com.example.api.cucumber.E2eConstants.GROUPS_ENDPOINT_URL;
+import static com.example.api.cucumber.E2eConstants.MOVIES_ENDPOINT_URL;
 import static com.example.api.cucumber.E2eConstants.STRING_FORMAT_SINGLE_ID;
 import static com.example.api.cucumber.E2eConstants.USERS_ENDPOINT_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.api.dto.CreateGroupDto;
+import com.example.api.dto.CreateMovieDto;
 import com.example.api.dto.CreateUserDto;
 import com.example.api.dto.GetUserDto;
 import com.example.api.dto.UpdateUserDto;
@@ -21,7 +21,7 @@ public class UsersStepdefs extends CucumberSpringConfiguration {
   private String userId;
   private final HashMap<String, String> userIds = new HashMap<>();
   private Response response;
-  private final String ADMIN_GROUP = "admin";
+  private final String ADMIN_MOVIE = "admin";
 
   @When("the user {string} already existed")
   public void theUserIsCreated(String user) {
@@ -32,11 +32,11 @@ public class UsersStepdefs extends CucumberSpringConfiguration {
     userIds.putIfAbsent(user, userId);
   }
 
-  @And("the user {string} creates Admin Group")
-  public void adminGroupIsCreated(String executionUser) {
-    CreateGroupDto createGroupDto = E2eConstants.getCreateGroupDto(ADMIN_GROUP);
-    String groupBody = e2eMethods.getJsonString(createGroupDto);
-    response = e2eMethods.post(GROUPS_ENDPOINT_URL, groupBody, userIds.get(executionUser));
+  @And("the user {string} creates Admin Movie")
+  public void adminMovieIsCreated(String executionUser) {
+    CreateMovieDto createMovieDto = E2eConstants.getCreateMovieDto(ADMIN_MOVIE);
+    String movieBody = e2eMethods.getJsonString(createMovieDto);
+    response = e2eMethods.post(MOVIES_ENDPOINT_URL, movieBody, userIds.get(executionUser));
   }
 
   @When("the user {string} updates the user {string} information")

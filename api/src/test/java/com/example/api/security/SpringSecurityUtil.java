@@ -17,6 +17,6 @@ public class SpringSecurityUtil {
 
     String role() default "role";
 
-    String groupId() default "groupId";
+    String movieId() default "movieId";
   }
 }

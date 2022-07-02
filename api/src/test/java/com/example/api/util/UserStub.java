@@ -9,19 +9,19 @@ import com.example.api.dto.UserDetailDto.UserDetailDtoBuilder;
 import com.example.api.model.User;
 import com.example.api.model.User.UserBuilder;
 import com.example.api.model.UserDetail;
-import com.example.api.model.UserGroup;
+import com.example.api.model.UserMovie;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class UserStub {
-  private static final String MOCKED_GROUP_ID = "mockedGroupId";
+  private static final String MOCKED_MOVIE_ID = "mockedMovieId";
   private static final String MOCKED_EMAIL = "mockedEmail";
   private static final String MOCKED_FAMILY_NAME = "mockedFamilyName";
   private static final String MOCKED_GIVEN_NAME = "mockedGivenName";
   private static final String MOCKED_PREFERRED_LANGUAGE = "mockedPreferredLanguage";
   private static final String MOCKED_PHONE_NUMBER = "mockedPhoneNumber";
-  private static final String MOCKED_GROUP_NAME = "mockedGroupName";
+  private static final String MOCKED_MOVIE_NAME = "mockedMovieName";
 
   public static CreateUserDto getCreateUserDto() {
     CreateUserDtoBuilder builder = CreateUserDto.builder();
@@ -54,17 +54,17 @@ public class UserStub {
             .preferredLanguage(MOCKED_PREFERRED_LANGUAGE)
             .phoneNumber(MOCKED_PHONE_NUMBER)
             .build();
-    List<UserGroup> userGroups =
-        new ArrayList<UserGroup>(
+    List<UserMovie> userMovies =
+        new ArrayList<UserMovie>(
             Arrays.asList(
-                UserGroup.builder().groupId(MOCKED_GROUP_ID).groupName(MOCKED_GROUP_NAME).build()));
+                UserMovie.builder().movieId(MOCKED_MOVIE_ID).movieName(MOCKED_MOVIE_NAME).build()));
 
     return builder
         .userId(userId)
         .email(MOCKED_EMAIL)
         .familyName(MOCKED_FAMILY_NAME)
         .givenName(MOCKED_GIVEN_NAME)
-        .userGroups(userGroups)
+        .userMovies(userMovies)
         .userDetail(userDetail)
         .build();
   }

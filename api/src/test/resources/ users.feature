@@ -3,7 +3,7 @@ Feature: Test /users CRUD endpoints
   Background: Admin user and General user already existed
     When the user "general" already existed
     When the user "admin" already existed
-    And the user "admin" creates Admin Group
+    And the user "admin" creates Admin Movie
     Then it returns a status code of 201 for user
 
   Scenario: Admin user updates General user information

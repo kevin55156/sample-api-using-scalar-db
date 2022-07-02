@@ -7,15 +7,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.api.dto.CreateGroupDto;
-import com.example.api.dto.GetGroupDto;
-import com.example.api.dto.GroupUserDto;
+import com.example.api.dto.CreateMovieDto;
+import com.example.api.dto.GetMovieDto;
+import com.example.api.dto.MovieUserDto;
 import com.example.api.exception.ServiceException;
-import com.example.api.model.Group;
+import com.example.api.model.Movie;
 import com.example.api.model.User;
-import com.example.api.repository.GroupRepository;
+import com.example.api.repository.MovieRepository;
 import com.example.api.repository.UserRepository;
-import com.example.api.util.GroupStub;
+import com.example.api.util.MovieStub;
 import com.example.api.util.UserStub;
 import com.scalar.db.api.DistributedTransaction;
 import com.scalar.db.api.DistributedTransactionManager;
@@ -35,172 +35,172 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
-public class GroupServiceTest {
-  private static final String MOCKED_GROUP_ID_1 = "mockedGroupId";
-  private static final String MOCKED_GROUP_ID_2 = "mockedGroupId2";
+public class MovieServiceTest {
+  private static final String MOCKED_MOVIE_ID_1 = "mockedMovieId";
+  private static final String MOCKED_MOVIE_ID_2 = "mockedMovieId2";
   private static final String MOCKED_USER_ID_1 = "mockedUserId";
   private static final String MOCKED_USER_ID_2 = "mockedUserId2";
 
   @Mock UserRepository userRepository;
-  @Mock GroupRepository groupRepository;
+  @Mock MovieRepository movieRepository;
   @MockBean DistributedTransactionManager manager;
   @MockBean DistributedTransaction tx;
-  @Autowired GroupService groupService;
+  @Autowired MovieService movieService;
   @Autowired ModelMapper mapper;
 
   @BeforeEach
   private void setUp() throws TransactionException {
-    groupService = new GroupService(groupRepository, userRepository, manager, mapper);
+    movieService = new MovieService(movieRepository, userRepository, manager, mapper);
 
     when(manager.start()).thenReturn(tx);
   }
 
   @Test
-  public void createGroup_shouldSuccess() throws TransactionException, InterruptedException {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
+  public void createMovie_shouldSuccess() throws TransactionException, InterruptedException {
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
     User user = UserStub.getUser(MOCKED_USER_ID_1);
 
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
-    groupService.createGroup(createGroupDto, MOCKED_USER_ID_1);
+    movieService.createMovie(createMovieDto, MOCKED_USER_ID_1);
 
     verify(tx, times(1)).commit();
   }
 
   @Test
-  public void createGroup_whenCommitFailed_shouldServiceException() throws TransactionException {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
+  public void createMovie_whenCommitFailed_shouldServiceException() throws TransactionException {
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
     User user = UserStub.getUser(MOCKED_USER_ID_1);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
 
     doThrow(CommitException.class).when(tx).commit();
 
     assertThrows(
-        ServiceException.class, () -> groupService.createGroup(createGroupDto, MOCKED_USER_ID_1));
+        ServiceException.class, () -> movieService.createMovie(createMovieDto, MOCKED_USER_ID_1));
   }
 
   @Test
   public void
-      createGroup_whenCommitConflictExceptionThrows_shouldThrowServiceExceptionAndAbortTransaction3Times()
+      createMovie_whenCommitConflictExceptionThrows_shouldThrowServiceExceptionAndAbortTransaction3Times()
           throws TransactionException {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
     User user = UserStub.getUser(MOCKED_USER_ID_1);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
 
     doThrow(CommitConflictException.class).when(tx).commit();
 
     assertThrows(
-        ServiceException.class, () -> groupService.createGroup(createGroupDto, MOCKED_USER_ID_1));
+        ServiceException.class, () -> movieService.createMovie(createMovieDto, MOCKED_USER_ID_1));
     verify(tx, times(3)).abort();
   }
 
   @Test
-  public void addGroupUser_shouldSuccess() throws TransactionException, InterruptedException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+  public void addMovieUser_shouldSuccess() throws TransactionException, InterruptedException {
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
     User user = UserStub.getUser(MOCKED_USER_ID_2);
-    GroupUserDto groupUserDto = GroupStub.getGroupUserDto(MOCKED_USER_ID_2);
+    MovieUserDto movieUserDto = MovieStub.getMovieUserDto(MOCKED_USER_ID_2);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
     when(userRepository.getUser(tx, MOCKED_USER_ID_2)).thenReturn(user);
 
-    groupService.addGroupUser(MOCKED_GROUP_ID_1, groupUserDto);
+    movieService.addMovieUser(MOCKED_MOVIE_ID_1, movieUserDto);
 
     verify(tx, times(1)).commit();
   }
 
   @Test
-  public void addGroupUser_whenAlreadyBelongingUser_shouldThrowServiceException()
+  public void addMovieUser_whenAlreadyBelongingUser_shouldThrowServiceException()
       throws TransactionException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
     User user = UserStub.getUser(MOCKED_USER_ID_1);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
 
-    GroupUserDto groupUserDto = GroupStub.getGroupUserDto(MOCKED_USER_ID_1);
+    MovieUserDto movieUserDto = MovieStub.getMovieUserDto(MOCKED_USER_ID_1);
 
     Assertions.assertThrows(
-        ServiceException.class, () -> groupService.addGroupUser(MOCKED_GROUP_ID_1, groupUserDto));
+        ServiceException.class, () -> movieService.addMovieUser(MOCKED_MOVIE_ID_1, movieUserDto));
     verify(tx).abort();
   }
 
   @Test
-  public void deleteGroupUser_shouldSuccess() throws TransactionException, InterruptedException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+  public void deleteMovieUser_shouldSuccess() throws TransactionException, InterruptedException {
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
     User user = UserStub.getUser(MOCKED_USER_ID_1);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
 
-    groupService.deleteGroupUser(MOCKED_GROUP_ID_1, MOCKED_USER_ID_1);
+    movieService.deleteMovieUser(MOCKED_MOVIE_ID_1, MOCKED_USER_ID_1);
 
     verify(tx, times(1)).commit();
   }
 
   @Test
-  public void deleteGroupUser_NotBelongingUser_shouldThrowServiceException()
+  public void deleteMovieUser_NotBelongingUser_shouldThrowServiceException()
       throws TransactionException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
     User user = UserStub.getUser(MOCKED_USER_ID_1);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
 
     Assertions.assertThrows(
         ServiceException.class,
-        () -> groupService.deleteGroupUser(MOCKED_GROUP_ID_1, MOCKED_USER_ID_2));
+        () -> movieService.deleteMovieUser(MOCKED_MOVIE_ID_1, MOCKED_USER_ID_2));
     verify(tx).abort();
   }
 
   @Test
-  public void listGroupUsers_shouldSuccess() throws TransactionException, InterruptedException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+  public void listMovieUsers_shouldSuccess() throws TransactionException, InterruptedException {
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
-    List<GroupUserDto> groupUserList = groupService.listGroupUsers(MOCKED_GROUP_ID_1);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
+    List<MovieUserDto> movieUserList = movieService.listMovieUsers(MOCKED_MOVIE_ID_1);
 
-    assertEquals(groupUserList.size(), 1);
-    assertEquals(groupUserList.get(0).getUserId(), group.getGroupUsers().get(0).getUserId());
+    assertEquals(movieUserList.size(), 1);
+    assertEquals(movieUserList.get(0).getUserId(), movie.getMovieUsers().get(0).getUserId());
   }
 
   @Test
-  public void listGroups_shouldSuccess() throws TransactionException, InterruptedException {
-    Group group1 = GroupStub.getGroup(MOCKED_GROUP_ID_1);
-    Group group2 = GroupStub.getGroup(MOCKED_GROUP_ID_2);
-    List<Group> actualGroupList = new ArrayList<Group>(Arrays.asList(group1, group2));
+  public void listMovies_shouldSuccess() throws TransactionException, InterruptedException {
+    Movie movie1 = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
+    Movie movie2 = MovieStub.getMovie(MOCKED_MOVIE_ID_2);
+    List<Movie> actualMovieList = new ArrayList<Movie>(Arrays.asList(movie1, movie2));
 
-    when(groupRepository.listGroups(tx)).thenReturn(actualGroupList);
+    when(movieRepository.listMovies(tx)).thenReturn(actualMovieList);
 
-    List<GetGroupDto> expectedGroupList = groupService.listGroups();
+    List<GetMovieDto> expectedMovieList = movieService.listMovies();
 
-    assertEquals(expectedGroupList.size(), 2);
-    assertEquals(expectedGroupList.get(0).getGroupId(), actualGroupList.get(0).getGroupId());
-    assertEquals(expectedGroupList.get(1).getGroupId(), actualGroupList.get(1).getGroupId());
+    assertEquals(expectedMovieList.size(), 2);
+    assertEquals(expectedMovieList.get(0).getMovieId(), actualMovieList.get(0).getMovieId());
+    assertEquals(expectedMovieList.get(1).getMovieId(), actualMovieList.get(1).getMovieId());
   }
 
   @Test
-  public void deleteGroup_shouldSuccess() throws TransactionException, InterruptedException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+  public void deleteMovie_shouldSuccess() throws TransactionException, InterruptedException {
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
     User user = UserStub.getUser(MOCKED_USER_ID_1);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
 
-    groupService.deleteGroup(MOCKED_GROUP_ID_1);
+    movieService.deleteMovie(MOCKED_MOVIE_ID_1);
 
     verify(tx, times(1)).commit();
   }
 
   @Test
-  public void deleteGroup_whenCommitFailed_shouldThrowServiceException()
+  public void deleteMovie_whenCommitFailed_shouldThrowServiceException()
       throws TransactionException {
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID_1);
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID_1);
     User user = UserStub.getUser(MOCKED_USER_ID_1);
 
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID_1)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID_1)).thenReturn(movie);
     when(userRepository.getUser(tx, MOCKED_USER_ID_1)).thenReturn(user);
     doThrow(CommitException.class).when(tx).commit();
 
-    assertThrows(ServiceException.class, () -> groupService.deleteGroup(MOCKED_GROUP_ID_1));
+    assertThrows(ServiceException.class, () -> movieService.deleteMovie(MOCKED_MOVIE_ID_1));
     verify(tx).abort();
   }
 }

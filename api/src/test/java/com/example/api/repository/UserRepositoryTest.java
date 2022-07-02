@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.api.dto.CreateUserDto;
-import com.example.api.dto.GetGroupDto;
+import com.example.api.dto.GetMovieDto;
 import com.example.api.dto.UpdateUserDto;
 import com.example.api.exception.ObjectAlreadyExistingException;
 import com.example.api.exception.ObjectNotFoundException;
@@ -93,10 +93,10 @@ public class UserRepositoryTest {
   @Test
   public void updateUser_shouldSuccess() throws TransactionException {
     UpdateUserDto updateUserDto = UserStub.getUpdateUserDto();
-    List<GetGroupDto> groups = new ArrayList<GetGroupDto>();
+    List<GetMovieDto> movies = new ArrayList<GetMovieDto>();
     arrangeResult(result, MOCKED_USER_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
-    repository.updateUser(tx, updateUserDto, groups, MOCKED_USER_ID);
+    repository.updateUser(tx, updateUserDto, movies, MOCKED_USER_ID);
 
     ArgumentCaptor<Put> argumentCaptor = ArgumentCaptor.forClass(Put.class);
 
@@ -112,17 +112,17 @@ public class UserRepositoryTest {
   @Test
   public void updateUser_userNotFounds_ObjectNotFoundExceptionThrown() throws TransactionException {
     UpdateUserDto updateUserDto = UserStub.getUpdateUserDto();
-    List<GetGroupDto> groups = new ArrayList<GetGroupDto>();
+    List<GetMovieDto> movies = new ArrayList<GetMovieDto>();
 
     Assertions.assertThrows(
         ObjectNotFoundException.class,
-        () -> repository.updateUser(tx, updateUserDto, groups, MOCKED_USER_ID));
+        () -> repository.updateUser(tx, updateUserDto, movies, MOCKED_USER_ID));
   }
 
   @Test
   public void updateUser_dbSomeProblems_CrudExceptionThrown() throws TransactionException {
     UpdateUserDto updateUserDto = UserStub.getUpdateUserDto();
-    List<GetGroupDto> groups = new ArrayList<GetGroupDto>();
+    List<GetMovieDto> movies = new ArrayList<GetMovieDto>();
     arrangeResult(result, MOCKED_USER_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
 
@@ -130,7 +130,7 @@ public class UserRepositoryTest {
 
     Assertions.assertThrows(
         RepositoryCrudException.class,
-        () -> repository.updateUser(tx, updateUserDto, groups, MOCKED_USER_ID));
+        () -> repository.updateUser(tx, updateUserDto, movies, MOCKED_USER_ID));
   }
 
   @Test

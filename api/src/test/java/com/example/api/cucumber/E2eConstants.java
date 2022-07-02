@@ -1,28 +1,28 @@
 package com.example.api.cucumber;
 
-import com.example.api.dto.CreateGroupDto;
-import com.example.api.dto.CreateGroupDto.CreateGroupDtoBuilder;
+import com.example.api.dto.CreateMovieDto;
+import com.example.api.dto.CreateMovieDto.CreateMovieDtoBuilder;
 import com.example.api.dto.CreateUserDto;
 import com.example.api.dto.CreateUserDto.CreateUserDtoBuilder;
-import com.example.api.dto.GetGroupDto;
-import com.example.api.dto.GetGroupDto.GetGroupDtoBuilder;
+import com.example.api.dto.GetMovieDto;
+import com.example.api.dto.GetMovieDto.GetMovieDtoBuilder;
 import com.example.api.dto.GetUserDto;
 import com.example.api.dto.GetUserDto.GetUserDtoBuilder;
-import com.example.api.dto.GroupUserDto;
-import com.example.api.dto.GroupUserDto.GroupUserDtoBuilder;
+import com.example.api.dto.MovieUserDto;
+import com.example.api.dto.MovieUserDto.MovieUserDtoBuilder;
 import com.example.api.dto.UpdateUserDto;
 import com.example.api.dto.UpdateUserDto.UpdateUserDtoBuilder;
 import com.example.api.dto.UserDetailDto;
 import com.example.api.dto.UserDetailDto.UserDetailDtoBuilder;
-import com.example.api.model.GroupUser;
+import com.example.api.model.MovieUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class E2eConstants {
   public static final String USERS_ENDPOINT_URL = "/users";
-  public static final String GROUPS_ENDPOINT_URL = "/groups";
-  public static final String GROUP_USERS = "group-users";
+  public static final String MOVIES_ENDPOINT_URL = "/movies";
+  public static final String MOVIE_USERS = "movie-users";
   public static final String STRING_FORMAT_SINGLE_ID = "%s/%s";
   public static final String STRING_FORMAT_TWO_SLASH = "%s/%s/%s";
   public static final String STRING_FORMAT_THREE_SLASH = "%s/%s/%s/%s";
@@ -69,23 +69,23 @@ public class E2eConstants {
         .build();
   }
 
-  public static CreateGroupDto getCreateGroupDto(String groupName) {
-    CreateGroupDtoBuilder builder = CreateGroupDto.builder();
-    return builder.groupName(groupName).build();
+  public static CreateMovieDto getCreateMovieDto(String movieName) {
+    CreateMovieDtoBuilder builder = CreateMovieDto.builder();
+    return builder.movieName(movieName).build();
   }
 
-  public static GroupUserDto getGroupUserDto(String userId) {
-    GroupUserDtoBuilder builder = GroupUserDto.builder();
+  public static MovieUserDto getMovieUserDto(String userId) {
+    MovieUserDtoBuilder builder = MovieUserDto.builder();
     return builder.userId(userId).type(MOCKED_TYPE).build();
   }
 
-  public static List<GroupUser> getGroupUsers() {
-    GroupUser groupUser = GroupUser.builder().userId(MOCKED_USER_ID).type(MOCKED_TYPE).build();
-    return new ArrayList<GroupUser>(Arrays.asList(groupUser));
+  public static List<MovieUser> getMovieUsers() {
+    MovieUser movieUser = MovieUser.builder().userId(MOCKED_USER_ID).type(MOCKED_TYPE).build();
+    return new ArrayList<MovieUser>(Arrays.asList(movieUser));
   }
 
-  public static GetGroupDto getGetGroupDto(String groupId, String groupName) {
-    GetGroupDtoBuilder builder = GetGroupDto.builder();
-    return builder.groupId(groupId).groupName(groupName).build();
+  public static GetMovieDto getGetMovieDto(String movieId, String movieName) {
+    GetMovieDtoBuilder builder = GetMovieDto.builder();
+    return builder.movieId(movieId).movieName(movieName).build();
   }
 }

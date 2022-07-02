@@ -2,7 +2,7 @@ package com.example.api.service;
 
 import com.example.api.exception.ObjectNotFoundException;
 import com.example.api.model.User;
-import com.example.api.model.UserGroup;
+import com.example.api.model.UserMovie;
 import com.example.api.repository.UserRepository;
 import com.scalar.db.api.DistributedTransaction;
 import com.scalar.db.api.DistributedTransactionManager;
@@ -50,20 +50,20 @@ public class AuthenticationService
       User user = userRepository.getUser(tx, userId);
       authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-      List<String> groupNameList = new ArrayList<String>();
-      List<String> groupIdList = new ArrayList<String>();
-      List<UserGroup> userGroups =
-          Optional.ofNullable(user.getUserGroups()).orElse(new ArrayList<UserGroup>());
-      userGroups.forEach(
-          (userGroup -> {
-            groupNameList.add(userGroup.getGroupName());
-            groupIdList.add(userGroup.getGroupId());
+      List<String> movieNameList = new ArrayList<String>();
+      List<String> movieIdList = new ArrayList<String>();
+      List<UserMovie> userMovies =
+          Optional.ofNullable(user.getUserMovies()).orElse(new ArrayList<UserMovie>());
+      userMovies.forEach(
+          (userMovie -> {
+            movieNameList.add(userMovie.getMovieName());
+            movieIdList.add(userMovie.getMovieId());
           }));
-      if (groupNameList.contains("admin")) {
+      if (movieNameList.contains("admin")) {
         authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
       }
 
-      return new AccountUser("user", "password", authorities, user.getUserId(), groupIdList);
+      return new AccountUser("user", "password", authorities, user.getUserId(), movieIdList);
     } catch (TransactionException | ObjectNotFoundException e) {
       throw new UsernameNotFoundException("Invalid authorization header.");
     }
@@ -71,21 +71,21 @@ public class AuthenticationService
 
   public static class AccountUser extends org.springframework.security.core.userdetails.User {
     String userId;
-    List<String> groupIdList;
+    List<String> movieIdList;
 
     public AccountUser(
         String username,
         String password,
         Collection<? extends GrantedAuthority> authorities,
         String userId,
-        List<String> groupIdList) {
+        List<String> movieIdList) {
       super(username, password, authorities);
       this.userId = userId;
-      this.groupIdList = groupIdList;
+      this.movieIdList = movieIdList;
     }
 
-    public List<String> getGroupIdList() {
-      return groupIdList;
+    public List<String> getMovieIdList() {
+      return movieIdList;
     }
 
     public String getUserId() {

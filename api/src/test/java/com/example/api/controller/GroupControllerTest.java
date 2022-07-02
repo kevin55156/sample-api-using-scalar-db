@@ -6,14 +6,14 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.example.api.dto.CreateGroupDto;
-import com.example.api.dto.GetGroupDto;
-import com.example.api.dto.GroupUserDto;
+import com.example.api.dto.CreateMovieDto;
+import com.example.api.dto.GetMovieDto;
+import com.example.api.dto.MovieUserDto;
 import com.example.api.repository.UserRepository;
 import com.example.api.security.SpringSecurityUtil.WithCustomMockUser;
 import com.example.api.service.AuthenticationService;
-import com.example.api.service.GroupService;
-import com.example.api.util.GroupStub;
+import com.example.api.service.MovieService;
+import com.example.api.util.MovieStub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scalar.db.api.DistributedTransactionManager;
 import java.util.ArrayList;
@@ -32,20 +32,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @ContextConfiguration
-@WebMvcTest(GroupController.class)
-public class GroupControllerTest {
-  private static final String BASE_URL_PATH = "/groups";
-  private static final String GROUP_USERS_URL_PATH = "/group-users";
-  private static final String MOCKED_GROUP_ID = "d8484f03-4a96-e137-12a0-25a794c4b622";
+@WebMvcTest(MovieController.class)
+public class MovieControllerTest {
+  private static final String BASE_URL_PATH = "/movies";
+  private static final String MOVIE_USERS_URL_PATH = "/movie-users";
+  private static final String MOCKED_MOVIE_ID = "d8484f03-4a96-e137-12a0-25a794c4b622";
   private static final String MOCKED_USER_ID = "6695bdd7-ccb3-0468-35af-e804f79329b2";
   private static final String MOCKED_TYPE = "mockedType";
-  private static final String MOCKED_GROUP_NAME = "mockedGroupName";
+  private static final String MOCKED_MOVIE_NAME = "mockedMovieName";
 
   private MockMvc mockMvc;
-  @MockBean private GroupService groupService;
+  @MockBean private MovieService movieService;
   @MockBean private UserRepository userRepository;
   @MockBean private DistributedTransactionManager manager;
-  @Autowired GroupController groupController;
+  @Autowired MovieController movieController;
   @Autowired private ObjectMapper objectMapper;
   @Autowired private WebApplicationContext context;
   @MockBean private AuthenticationService authenticationService;
@@ -57,49 +57,49 @@ public class GroupControllerTest {
 
   @Test
   @WithCustomMockUser(role = "ROLE_USER")
-  void createGroup_byGeneralUser() throws Exception {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
+  void createMovie_byGeneralUser() throws Exception {
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
 
     mockMvc
         .perform(
             post(BASE_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createGroupDto)))
+                .content(objectMapper.writeValueAsString(createMovieDto)))
         .andExpect(status().isCreated());
   }
 
   @Test
-  @WithCustomMockUser(groupId = MOCKED_GROUP_ID)
-  void addGroupUser_byGroupUser_shouldSuccess() throws Exception {
-    GroupUserDto groupUserDto = GroupStub.getGroupUserDto(MOCKED_USER_ID);
+  @WithCustomMockUser(movieId = MOCKED_MOVIE_ID)
+  void addMovieUser_byMovieUser_shouldSuccess() throws Exception {
+    MovieUserDto movieUserDto = MovieStub.getMovieUserDto(MOCKED_USER_ID);
     mockMvc
         .perform(
-            put(BASE_URL_PATH + "/" + MOCKED_GROUP_ID + GROUP_USERS_URL_PATH)
+            put(BASE_URL_PATH + "/" + MOCKED_MOVIE_ID + MOVIE_USERS_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(groupUserDto)))
+                .content(objectMapper.writeValueAsString(movieUserDto)))
         .andExpect(status().isOk());
   }
 
   @Test
   @WithCustomMockUser
-  void addGroupUser_byNonGroupUser_thenAccessDenied() throws Exception {
-    GroupUserDto groupUserDto = GroupStub.getGroupUserDto(MOCKED_USER_ID);
+  void addMovieUser_byNonMovieUser_thenAccessDenied() throws Exception {
+    MovieUserDto movieUserDto = MovieStub.getMovieUserDto(MOCKED_USER_ID);
 
     assertThrows(
         AccessDeniedException.class,
-        () -> groupController.addGroupUsers(MOCKED_GROUP_ID, groupUserDto));
+        () -> movieController.addMovieUsers(MOCKED_MOVIE_ID, movieUserDto));
   }
 
   @Test
-  @WithCustomMockUser(groupId = MOCKED_GROUP_ID)
-  void deleteGroupUser_byGroupUser_shouldSuccess() throws Exception {
+  @WithCustomMockUser(movieId = MOCKED_MOVIE_ID)
+  void deleteMovieUser_byMovieUser_shouldSuccess() throws Exception {
     mockMvc
         .perform(
             put(
                 BASE_URL_PATH
                     + "/"
-                    + MOCKED_GROUP_ID
-                    + GROUP_USERS_URL_PATH
+                    + MOCKED_MOVIE_ID
+                    + MOVIE_USERS_URL_PATH
                     + "/"
                     + MOCKED_USER_ID))
         .andExpect(status().isOk());
@@ -107,54 +107,54 @@ public class GroupControllerTest {
 
   @Test
   @WithCustomMockUser
-  void deleteGroupUser_byNonGroupUser_thenAccessDenied() throws Exception {
+  void deleteMovieUser_byNonMovieUser_thenAccessDenied() throws Exception {
     assertThrows(
         AccessDeniedException.class,
-        () -> groupController.deleteGroupUser(MOCKED_GROUP_ID, MOCKED_USER_ID));
+        () -> movieController.deleteMovieUser(MOCKED_MOVIE_ID, MOCKED_USER_ID));
   }
 
   @Test
-  @WithCustomMockUser(groupId = MOCKED_GROUP_ID)
-  void listGroupUsers_byGroupUser_shouldSuccess() throws Exception {
-    List<GroupUserDto> groupUsers =
-        new ArrayList<GroupUserDto>(Arrays.asList(GroupStub.getGroupUserDto(MOCKED_USER_ID)));
-    when(groupService.listGroupUsers(MOCKED_GROUP_ID)).thenReturn(groupUsers);
+  @WithCustomMockUser(movieId = MOCKED_MOVIE_ID)
+  void listMovieUsers_byMovieUser_shouldSuccess() throws Exception {
+    List<MovieUserDto> movieUsers =
+        new ArrayList<MovieUserDto>(Arrays.asList(MovieStub.getMovieUserDto(MOCKED_USER_ID)));
+    when(movieService.listMovieUsers(MOCKED_MOVIE_ID)).thenReturn(movieUsers);
 
     mockMvc
-        .perform(get(BASE_URL_PATH + "/" + MOCKED_GROUP_ID + GROUP_USERS_URL_PATH))
+        .perform(get(BASE_URL_PATH + "/" + MOCKED_MOVIE_ID + MOVIE_USERS_URL_PATH))
         .andExpect(status().isOk());
 
-    List<GroupUserDto> actualGroupUsers = groupController.listGroupUsers(MOCKED_GROUP_ID);
+    List<MovieUserDto> actualMovieUsers = movieController.listMovieUsers(MOCKED_MOVIE_ID);
 
-    assertEquals(1, actualGroupUsers.size());
-    assertEquals(MOCKED_TYPE, actualGroupUsers.get(0).getType());
+    assertEquals(1, actualMovieUsers.size());
+    assertEquals(MOCKED_TYPE, actualMovieUsers.get(0).getType());
   }
 
   @Test
   @WithCustomMockUser
-  void listGroupUsers_byNonGroupUser_thenAccessDenied() throws Exception {
+  void listMovieUsers_byNonMovieUser_thenAccessDenied() throws Exception {
     assertThrows(
-        AccessDeniedException.class, () -> groupController.listGroupUsers(MOCKED_GROUP_ID));
+        AccessDeniedException.class, () -> movieController.listMovieUsers(MOCKED_MOVIE_ID));
   }
 
   @Test
-  @WithCustomMockUser(groupId = MOCKED_GROUP_ID)
-  void deleteGroup_byGroupUser_shouldSuccess() throws Exception {
-    mockMvc.perform(delete(BASE_URL_PATH + "/" + MOCKED_GROUP_ID)).andExpect(status().isOk());
+  @WithCustomMockUser(movieId = MOCKED_MOVIE_ID)
+  void deleteMovie_byMovieUser_shouldSuccess() throws Exception {
+    mockMvc.perform(delete(BASE_URL_PATH + "/" + MOCKED_MOVIE_ID)).andExpect(status().isOk());
   }
 
   @Test
   @WithCustomMockUser(role = "ROLE_USER")
-  void listGroups_byGeneralUser_shouldSuccess() throws Exception {
-    List<GetGroupDto> groups =
-        new ArrayList<GetGroupDto>(Arrays.asList(GroupStub.getGetGroupDto(MOCKED_GROUP_ID)));
-    when(groupService.listGroups()).thenReturn(groups);
+  void listMovies_byGeneralUser_shouldSuccess() throws Exception {
+    List<GetMovieDto> movies =
+        new ArrayList<GetMovieDto>(Arrays.asList(MovieStub.getGetMovieDto(MOCKED_MOVIE_ID)));
+    when(movieService.listMovies()).thenReturn(movies);
 
     mockMvc.perform(get(BASE_URL_PATH)).andExpect(status().isOk());
 
-    List<GetGroupDto> actualGroups = groupController.listGroups();
+    List<GetMovieDto> actualMovies = movieController.listMovies();
 
-    assertEquals(1, actualGroups.size());
-    assertEquals(MOCKED_GROUP_NAME, actualGroups.get(0).getGroupName());
+    assertEquals(1, actualMovies.size());
+    assertEquals(MOCKED_MOVIE_NAME, actualMovies.get(0).getMovieName());
   }
 }

@@ -11,11 +11,11 @@ import com.example.api.dto.CreateUserDto;
 import com.example.api.dto.GetUserDto;
 import com.example.api.dto.UpdateUserDto;
 import com.example.api.exception.ServiceException;
-import com.example.api.model.Group;
+import com.example.api.model.Movie;
 import com.example.api.model.User;
-import com.example.api.repository.GroupRepository;
+import com.example.api.repository.MovieRepository;
 import com.example.api.repository.UserRepository;
-import com.example.api.util.GroupStub;
+import com.example.api.util.MovieStub;
 import com.example.api.util.UserStub;
 import com.scalar.db.api.DistributedTransaction;
 import com.scalar.db.api.DistributedTransactionManager;
@@ -35,17 +35,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 @SpringBootTest
 public class UserServiceTest {
   private static final String MOCKED_USER_ID = "mockedUserId";
-  private static final String MOCKED_GROUP_ID = "mockedGroupId";
+  private static final String MOCKED_MOVIE_ID = "mockedMovieId";
 
   @Mock UserRepository userRepository;
-  @Mock GroupRepository groupRepository;
+  @Mock MovieRepository movieRepository;
   @MockBean DistributedTransactionManager manager;
   @MockBean DistributedTransaction tx;
   @Autowired UserService userService;
 
   @BeforeEach
   private void setUp() throws TransactionException {
-    userService = new UserService(userRepository, groupRepository, manager);
+    userService = new UserService(userRepository, movieRepository, manager);
 
     when(manager.start()).thenReturn(tx);
   }
@@ -121,10 +121,10 @@ public class UserServiceTest {
   @Test
   public void deleteUser_shouldSuccess() throws TransactionException, InterruptedException {
     User user = UserStub.getUser(MOCKED_USER_ID);
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID);
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID);
 
     when(userRepository.getUser(tx, MOCKED_USER_ID)).thenReturn(user);
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID)).thenReturn(movie);
 
     userService.deleteUser(MOCKED_USER_ID);
 
@@ -135,10 +135,10 @@ public class UserServiceTest {
   public void deleteUser_whenCommitFailed_shouldThrowServiceException()
       throws TransactionException {
     User user = UserStub.getUser(MOCKED_USER_ID);
-    Group group = GroupStub.getGroup(MOCKED_GROUP_ID);
+    Movie movie = MovieStub.getMovie(MOCKED_MOVIE_ID);
 
     when(userRepository.getUser(tx, MOCKED_USER_ID)).thenReturn(user);
-    when(groupRepository.getGroup(tx, MOCKED_GROUP_ID)).thenReturn(group);
+    when(movieRepository.getMovie(tx, MOCKED_MOVIE_ID)).thenReturn(movie);
 
     doThrow(CommitException.class).when(tx).commit();
 

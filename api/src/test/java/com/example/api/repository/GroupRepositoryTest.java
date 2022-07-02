@@ -8,14 +8,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.api.dto.CreateGroupDto;
-import com.example.api.dto.GroupUserDto;
+import com.example.api.dto.CreateMovieDto;
+import com.example.api.dto.MovieUserDto;
 import com.example.api.exception.ObjectAlreadyExistingException;
 import com.example.api.exception.ObjectNotFoundException;
 import com.example.api.exception.RepositoryCrudException;
-import com.example.api.model.Group;
-import com.example.api.model.GroupUser;
-import com.example.api.util.GroupStub;
+import com.example.api.model.Movie;
+import com.example.api.model.MovieUser;
+import com.example.api.util.MovieStub;
 import com.example.api.util.ScalarUtil;
 import com.scalar.db.api.Delete;
 import com.scalar.db.api.DistributedTransaction;
@@ -40,16 +40,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
-public class GroupRepositoryTest {
-  private static final String MOCKED_GROUP_ID = UUID.randomUUID().toString();
+public class MovieRepositoryTest {
+  private static final String MOCKED_MOVIE_ID = UUID.randomUUID().toString();
   private static final String MOCKED_USER_ID = UUID.randomUUID().toString();
-  private static final String MOCKED_GROUP_NAME = "mockedGroupName";
-  private static final String COLUMN_GROUP_USERS = "group_users";
-  private static final String COLUMN_GROUP_NAME = "group_name";
+  private static final String MOCKED_MOVIE_NAME = "mockedMovieName";
+  private static final String COLUMN_MOVIE_USERS = "movie_users";
+  private static final String COLUMN_MOVIE_NAME = "movie_name";
   @MockBean DistributedTransactionManager manager;
   @MockBean DistributedTransaction tx;
   @MockBean Result result;
-  @Autowired GroupRepository repository;
+  @Autowired MovieRepository repository;
 
   @BeforeEach
   private void setUp() throws TransactionException {
@@ -57,64 +57,64 @@ public class GroupRepositoryTest {
   }
 
   @Test
-  public void createGroup_shouldSuccess() throws TransactionException {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
-    repository.createGroup(tx, createGroupDto, MOCKED_GROUP_ID, GroupStub.getGroupUsers());
+  public void createMovie_shouldSuccess() throws TransactionException {
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
+    repository.createMovie(tx, createMovieDto, MOCKED_MOVIE_ID, MovieStub.getMovieUsers());
 
     ArgumentCaptor<Put> argumentCaptor = ArgumentCaptor.forClass(Put.class);
     verify(tx, times(1)).put(argumentCaptor.capture());
 
     Put arg = argumentCaptor.getValue();
-    TextValue groupName = new TextValue(Group.GROUP_NAME, createGroupDto.getGroupName());
-    assertEquals(groupName, arg.getValues().get(COLUMN_GROUP_NAME));
+    TextValue movieName = new TextValue(Movie.MOVIE_NAME, createMovieDto.getMovieName());
+    assertEquals(movieName, arg.getValues().get(COLUMN_MOVIE_NAME));
     verify(tx).get(any());
   }
 
   @Test
-  public void createGroup_groupAlreadyExists() throws TransactionException {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
+  public void createMovie_movieAlreadyExists() throws TransactionException {
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
     when(tx.get(any())).thenReturn(Optional.of(result));
 
     Assertions.assertThrows(
         ObjectAlreadyExistingException.class,
         () ->
-            repository.createGroup(tx, createGroupDto, MOCKED_GROUP_ID, GroupStub.getGroupUsers()));
+            repository.createMovie(tx, createMovieDto, MOCKED_MOVIE_ID, MovieStub.getMovieUsers()));
   }
 
   @Test
-  public void createGroup_doSomeProblem_CrudException() throws TransactionException {
-    CreateGroupDto createGroupDto = GroupStub.getCreateGroupDto();
+  public void createMovie_doSomeProblem_CrudException() throws TransactionException {
+    CreateMovieDto createMovieDto = MovieStub.getCreateMovieDto();
     doThrow(CrudException.class).when(tx).put(any(Put.class));
 
     Assertions.assertThrows(
         RepositoryCrudException.class,
         () ->
-            repository.createGroup(tx, createGroupDto, MOCKED_GROUP_ID, GroupStub.getGroupUsers()));
+            repository.createMovie(tx, createMovieDto, MOCKED_MOVIE_ID, MovieStub.getMovieUsers()));
   }
 
   @Test
-  public void listGroups_shouldSuccess() throws TransactionException {
-    arrangeResult(result, MOCKED_GROUP_ID);
+  public void listMovies_shouldSuccess() throws TransactionException {
+    arrangeResult(result, MOCKED_MOVIE_ID);
     when(tx.scan(any())).thenReturn(Arrays.asList(result));
-    List<Group> groups = repository.listGroups(tx);
+    List<Movie> movies = repository.listMovies(tx);
 
     verify(tx).scan(any());
-    assertEquals(MOCKED_GROUP_ID, groups.get(0).getGroupId());
+    assertEquals(MOCKED_MOVIE_ID, movies.get(0).getMovieId());
     verify(tx, never()).get(any());
     verify(tx, never()).put(any(Put.class));
   }
 
   @Test
-  public void listGroups_doSomeProblem_CrudException() throws TransactionException {
+  public void listMovies_doSomeProblem_CrudException() throws TransactionException {
     doThrow(CrudException.class).when(tx).scan(any());
-    Assertions.assertThrows(RepositoryCrudException.class, () -> repository.listGroups(tx));
+    Assertions.assertThrows(RepositoryCrudException.class, () -> repository.listMovies(tx));
   }
 
   @Test
-  public void getGroup_shouldSuccess() throws TransactionException {
-    arrangeResult(result, MOCKED_GROUP_ID);
+  public void getMovie_shouldSuccess() throws TransactionException {
+    arrangeResult(result, MOCKED_MOVIE_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
-    Group group = repository.getGroup(tx, MOCKED_GROUP_ID);
+    Movie movie = repository.getMovie(tx, MOCKED_MOVIE_ID);
 
     ArgumentCaptor<Get> argumentCaptor = ArgumentCaptor.forClass(Get.class);
     verify(tx, times(1)).get(argumentCaptor.capture());
@@ -122,69 +122,69 @@ public class GroupRepositoryTest {
     Get arg = argumentCaptor.getValue();
     String pk = arg.getPartitionKey().get().get(0).toString();
 
-    assertEquals(new TextValue(Group.GROUP_ID, MOCKED_GROUP_ID).toString(), pk);
+    assertEquals(new TextValue(Movie.MOVIE_ID, MOCKED_MOVIE_ID).toString(), pk);
     verify(tx, never()).put(any(Put.class));
-    Assertions.assertNotNull(group);
+    Assertions.assertNotNull(movie);
   }
 
   @Test
-  public void getGroup_groupNotFound() throws TransactionException {
+  public void getMovie_movieNotFound() throws TransactionException {
     Assertions.assertThrows(
-        ObjectNotFoundException.class, () -> repository.getGroup(tx, MOCKED_GROUP_ID));
+        ObjectNotFoundException.class, () -> repository.getMovie(tx, MOCKED_MOVIE_ID));
   }
 
   @Test
-  public void getGroup_someProblem_CrudException() throws TransactionException {
+  public void getMovie_someProblem_CrudException() throws TransactionException {
     doThrow(CrudException.class).when(tx).get(any());
 
     Assertions.assertThrows(
-        RepositoryCrudException.class, () -> repository.getGroup(tx, MOCKED_GROUP_ID));
+        RepositoryCrudException.class, () -> repository.getMovie(tx, MOCKED_MOVIE_ID));
   }
 
   @Test
-  public void updateGroupUsers_shouldSuccess() throws TransactionException {
-    List<GroupUser> groupUsers = GroupStub.getGroupUsers();
-    arrangeResult(result, MOCKED_GROUP_ID);
+  public void updateMovieUsers_shouldSuccess() throws TransactionException {
+    List<MovieUser> movieUsers = MovieStub.getMovieUsers();
+    arrangeResult(result, MOCKED_MOVIE_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
-    repository.updateGroupUsers(tx, groupUsers, MOCKED_GROUP_ID);
+    repository.updateMovieUsers(tx, movieUsers, MOCKED_MOVIE_ID);
 
     ArgumentCaptor<Put> argumentCaptor = ArgumentCaptor.forClass(Put.class);
     verify(tx, times(1)).put(argumentCaptor.capture());
 
     Put arg = argumentCaptor.getValue();
-    TextValue groups =
-        new TextValue(Group.GROUP_USERS, ScalarUtil.convertDataObjectToJsonStr(groupUsers));
-    assertEquals(groups, arg.getValues().get(COLUMN_GROUP_USERS));
+    TextValue movies =
+        new TextValue(Movie.MOVIE_USERS, ScalarUtil.convertDataObjectToJsonStr(movieUsers));
+    assertEquals(movies, arg.getValues().get(COLUMN_MOVIE_USERS));
     verify(tx).get(any());
   }
 
   @Test
-  public void updateGroupUsers_groupNotFound() throws TransactionException {
-    List<GroupUser> groupUsers = GroupStub.getGroupUsers();
+  public void updateMovieUsers_movieNotFound() throws TransactionException {
+    List<MovieUser> movieUsers = MovieStub.getMovieUsers();
 
     Assertions.assertThrows(
         ObjectNotFoundException.class,
-        () -> repository.updateGroupUsers(tx, groupUsers, MOCKED_GROUP_ID));
+        () -> repository.updateMovieUsers(tx, movieUsers, MOCKED_MOVIE_ID));
   }
 
   @Test
-  public void updateGroupUsers_someProblem_CrudException() throws TransactionException {
-    List<GroupUser> groupUsers = GroupStub.getGroupUsers();
-    arrangeResult(result, MOCKED_GROUP_ID);
+  public void updateMovieUsers_someProblem_CrudException() throws TransactionException {
+    List<MovieUser> movieUsers = MovieStub.getMovieUsers();
+    arrangeResult(result, MOCKED_MOVIE_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
 
     doThrow(CrudException.class).when(tx).put(any(Put.class));
 
     Assertions.assertThrows(
         RepositoryCrudException.class,
-        () -> repository.updateGroupUsers(tx, groupUsers, MOCKED_GROUP_ID));
+        () -> repository.updateMovieUsers(tx, movieUsers, MOCKED_MOVIE_ID));
   }
 
   @Test
-  public void deleteGroup_shouldSuccess() throws TransactionException {
-    arrangeResult(result, MOCKED_GROUP_ID);
+  public void deleteMovie_shouldSuccess() throws TransactionException {
+    arrangeResult(result, MOCKED_MOVIE_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
-    repository.deleteGroup(tx, MOCKED_GROUP_ID);
+    repository.deleteMovie(tx, MOCKED_MOVIE_ID);
 
     ArgumentCaptor<Delete> argumentCaptor = ArgumentCaptor.forClass(Delete.class);
 
@@ -192,30 +192,30 @@ public class GroupRepositoryTest {
   }
 
   @Test
-  public void deleteGroup_groupNotFound() throws TransactionException {
+  public void deleteMovie_movieNotFound() throws TransactionException {
     Assertions.assertThrows(
-        ObjectNotFoundException.class, () -> repository.deleteGroup(tx, MOCKED_GROUP_ID));
+        ObjectNotFoundException.class, () -> repository.deleteMovie(tx, MOCKED_MOVIE_ID));
   }
 
   @Test
-  public void deleteGroup_someProblem_CrudException() throws TransactionException {
-    arrangeResult(result, MOCKED_GROUP_ID);
+  public void deleteMovie_someProblem_CrudException() throws TransactionException {
+    arrangeResult(result, MOCKED_MOVIE_ID);
     when(tx.get(any())).thenReturn(Optional.of(result));
 
     doThrow(CrudException.class).when(tx).delete(any(Delete.class));
 
     Assertions.assertThrows(
-        RepositoryCrudException.class, () -> repository.deleteGroup(tx, MOCKED_GROUP_ID));
+        RepositoryCrudException.class, () -> repository.deleteMovie(tx, MOCKED_MOVIE_ID));
   }
 
-  private void arrangeResult(Result result, final String groupId) {
-    arrangeResultTextValue(result, Group.GROUP_ID, groupId);
-    arrangeResultTextValue(result, Group.GROUP_NAME, MOCKED_GROUP_NAME);
+  private void arrangeResult(Result result, final String movieId) {
+    arrangeResultTextValue(result, Movie.MOVIE_ID, movieId);
+    arrangeResultTextValue(result, Movie.MOVIE_NAME, MOCKED_MOVIE_NAME);
     arrangeResultTextValue(
         result,
-        Group.GROUP_USERS,
+        Movie.MOVIE_USERS,
         ScalarUtil.convertDataObjectToJsonStr(
-            new ArrayList<GroupUserDto>(Arrays.asList(GroupStub.getGroupUserDto(MOCKED_USER_ID)))));
+            new ArrayList<MovieUserDto>(Arrays.asList(MovieStub.getMovieUserDto(MOCKED_USER_ID)))));
   }
 
   private static void arrangeResultTextValue(Result result, String key, String value) {
