@@ -1,5 +1,8 @@
 # Sample API using Scalar DB and Spring Boot
-Scalar DBとSpring Bootを使ったサンプルAPIです。
+https://github.com/yoshi-kino/sample-api-using-scalar-db
+を元に、マルチストレージでScalarDBを利用できるAPIです。
+- コード中とファイル名のuserとmovieを全置換(小文字と大文字に注意)することでモデル名の変更が可能なことを確認しました。
+- 認証なしでAPIを叩けるように改造しました。)
 
 ## API エンドポイント
 
