@@ -15,10 +15,10 @@ https://github.com/yoshi-kino/sample-api-using-scalar-db
 | /users/{user_id} | DELETE | ユーザーを削除する |
 | /movies/{user_id} | POST | グループを登録する |
 | /movies | GET | グループ一覧を取得する |
-| /movies/{movie_id}/movie-users | PUT | グループにユーザーを追加する|
-| /movies/{movie_id}/movie-users | GET | グループに所属するユーザーを一覧取得する|
-| /movies/{movie_id}/movie-users/{user_id} | PUT | グループからユーザーを脱退させる |
-| /movies/{movie_id} | DELETE | グループを削除する |
+| /movies/{movie_id}/movie-users | PUT | 動画にユーザーを関連づける|
+| /movies/{movie_id}/movie-users | GET | 動画に関連するユーザーを一覧取得する|
+| /movies/{movie_id}/movie-users/{user_id} | PUT | 動画とユーザーの関連を外す |
+| /movies/{movie_id} | DELETE | 動画を削除する |
 
 bodyのjsonの詳細については/api/src/main/java/config/example/api/dtoを参照してください。
 
