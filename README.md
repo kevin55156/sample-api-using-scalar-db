@@ -8,17 +8,17 @@ https://github.com/yoshi-kino/sample-api-using-scalar-db
 
 | URI | HTTPメソッド | Description |
 | --- | ---------- | ------------ |
-| /users | POST | ユーザーを登録する |
-| /users | GET | ユーザーを一覧取得する |
-| /users/{user_id} | GET | ユーザー情報を取得する |
-| /users/{user_id} | PUT | ユーザー情報を更新する |
-| /users/{user_id} | DELETE | ユーザーを削除する |
-| /movies/{user_id} | POST | グループを登録する |
-| /movies | GET | グループ一覧を取得する |
-| /movies/{movie_id}/movie-users | PUT | 動画にユーザーを関連づける|
-| /movies/{movie_id}/movie-users | GET | 動画に関連するユーザーを一覧取得する|
-| /movies/{movie_id}/movie-users/{user_id} | PUT | 動画とユーザーの関連を外す |
-| /movies/{movie_id} | DELETE | 動画を削除する |
+| /users | POST | register a user |
+| /users | GET | get users'imformation|
+| /users/{user_id} | GET | get user's imformation  |
+| /users/{user_id} | PUT | update user's imformation |
+| /users/{user_id} | DELETE | delete a user|
+| /movies/{user_id} | POST | register a movie |
+| /movies | GET | get movies' imformation |
+| /movies/{movie_id}/movie-users | PUT | associate a movie with a user|
+| /movies/{movie_id}/movie-users | GET | get movie's imformation　associated with a movie |
+| /movies/{movie_id}/movie-users/{user_id} | PUT | update association between a movie and a user |
+| /movies/{movie_id} | DELETE | delete a movie |
 
 bodyのjsonの詳細については/api/src/main/java/config/example/api/dtoを参照してください。
 
