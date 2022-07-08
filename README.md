@@ -6,7 +6,7 @@ https://github.com/yoshi-kino/sample-api-using-scalar-db
 
 ## API エンドポイント
 
-| URI | HTTPメソッド | Description |
+| URI | HTTP method | Description |
 | --- | ---------- | ------------ |
 | /users | POST | register a user |
 | /users | GET | get users'imformation|
