@@ -29,7 +29,6 @@ public class MovieController {
   @Autowired MovieService movieService;
 
   @PostMapping("/{user_id}")
-  // @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   @ResponseStatus(HttpStatus.CREATED)
   public String createMovie(
       @RequestBody CreateMovieDto createMovieDto, @PathVariable(PATH_USER_ID) String userId)
@@ -38,8 +37,6 @@ public class MovieController {
   }
 
   @PutMapping("/{movie_id}/movie-users")
-  // @PreAuthorize(
-  //     "hasRole('ROLE_ADMIN') or @webSecurityConfig.isMovieUser(principal.movieIdList, #movieId)")
   @ResponseStatus(HttpStatus.OK)
   public void addMovieUsers(
       @PathVariable(PATH_MOVIE_ID) String movieId, @RequestBody MovieUserDto movieUser)
@@ -48,8 +45,6 @@ public class MovieController {
   }
 
   @PutMapping("/{movie_id}/movie-users/{user_id}")
-  // @PreAuthorize(
-  //     "hasRole('ROLE_ADMIN') or @webSecurityConfig.isMovieUser(principal.movieIdList, #movieId)")
   @ResponseStatus(HttpStatus.OK)
   public void deleteMovieUser(
       @PathVariable(PATH_MOVIE_ID) String movieId, @PathVariable(PATH_USER_ID) String userId)
@@ -58,16 +53,12 @@ public class MovieController {
   }
 
   @DeleteMapping("/{movie_id}")
-  // @PreAuthorize(
-  //     "hasRole('ROLE_ADMIN') or @webSecurityConfig.isMovieUser(principal.movieIdList, #movieId)")
   @ResponseStatus(HttpStatus.OK)
   public void deleteMovie(@PathVariable(PATH_MOVIE_ID) String movieId) throws Exception {
     movieService.deleteMovie(movieId);
   }
 
   @GetMapping("/{movie_id}/movie-users")
-  // @PreAuthorize(
-  //     "hasRole('ROLE_ADMIN') or @webSecurityConfig.isMovieUser(principal.movieIdList, #movieId)")
   @ResponseStatus(HttpStatus.OK)
   public List<MovieUserDto> listMovieUsers(@PathVariable(PATH_MOVIE_ID) String movieId)
       throws Exception {
@@ -75,7 +66,6 @@ public class MovieController {
   }
 
   @GetMapping()
-  // @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   @ResponseStatus(HttpStatus.OK)
   public List<GetMovieDto> listMovies() throws Exception {
     return movieService.listMovies();
