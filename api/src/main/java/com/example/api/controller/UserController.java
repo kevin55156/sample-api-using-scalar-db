@@ -32,7 +32,6 @@ public class UserController {
   }
 
   @PutMapping("/{user_id}")
-  // @PreAuthorize("hasRole('ROLE_ADMIN') or principal.userId == #userId")
   @ResponseStatus(HttpStatus.OK)
   public void updateUser(
       @PathVariable(PATH_USER_ID) String userId, @RequestBody UpdateUserDto updateUserDto)
@@ -41,14 +40,12 @@ public class UserController {
   }
 
   @DeleteMapping("/{user_id}")
-  // @PreAuthorize("hasRole('ROLE_ADMIN') or principal.userId == #userId")
   @ResponseStatus(HttpStatus.OK)
   public void deleteUser(@PathVariable(PATH_USER_ID) String userId) throws Exception {
     userService.deleteUser(userId);
   }
 
   @GetMapping("/{user_id}")
-  // @PreAuthorize("hasRole('ROLE_ADMIN') or principal.userId == #userId")
   @ResponseStatus(HttpStatus.OK)
   public GetUserDto getUser(@PathVariable(PATH_USER_ID) String userId) throws Exception {
     return userService.getUser(userId);
@@ -56,7 +53,6 @@ public class UserController {
 
   @GetMapping()
   @ResponseStatus(HttpStatus.OK)
-  // @PreAuthorize("hasRole('ROLE_ADMIN')")
   public List<GetUserDto> listUsers() throws Exception {
     return userService.listUsers();
   }
