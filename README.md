@@ -1,8 +1,9 @@
-# Sample API using Scalar DB and Spring Boot
 https://github.com/yoshi-kino/sample-api-using-scalar-db
-を元に、マルチストレージでScalarDBを利用できるAPIです。
-- コード中とファイル名のuserとmovieを全置換(小文字と大文字に注意)することでモデル名の変更が可能なことを確認しました。
-- 認証なしでAPIを叩けるように改造しました。)
+を元にしました。
+- 不要なファイルを削除しました。
+- 不要な認証を削除しました。
+- movies周りのDTO,Repository,Controller,Service,Modelを追加しました。
+- マルチストレージに対応させるために、docker-composeファイルとschemaを書き換えました。
 
 ## API エンドポイント
 
@@ -23,7 +24,7 @@ https://github.com/yoshi-kino/sample-api-using-scalar-db
 bodyのjsonの詳細については/api/src/main/java/config/example/api/dtoを参照してください。
 
 # Creating a Schema
-以下のコマンドで、Cassandraを起動させ、スキーマを作成してください。
+以下のコマンドで、CassandraとMySQLを起動させ、スキーマを作成してください。
 
 ``` bash
 $ ./db up
